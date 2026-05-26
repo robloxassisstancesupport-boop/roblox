@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Roblox Profile Lookup</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f2f2f2;
+}
+
+.topbar{
+    background:white;
+    height:50px;
+    border-bottom:1px solid #ddd;
+    display:flex;
+    align-items:center;
+    padding-left:20px;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.container{
+    width:400px;
+    margin:60px auto;
+    background:#ededed;
+    padding:25px;
+    text-align:center;
+}
+
+h1{
+    margin-bottom:25px;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin-bottom:15px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    background:#ddd;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.profile{
+    margin-top:25px;
+    display:none;
+}
+
+.profile img{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+<div class="logo">Roblox</div>
+</div>
+
+<div class="container">
+
+<h1>Find Roblox Profile</h1>
+
+<input
+id="username"
+placeholder="Enter Username">
+
+<button onclick="loadProfile()">
+Submit
+</button>
+
+<div id="profile" class="profile">
+
+<img id="avatar">
+
+<h2 id="displayName"></h2>
+
+<p id="usernameText"></p>
+
+</div>
+
+</div>
+
+<script>
+
+async function loadProfile(){
+
+const username=
+document.getElementById("username").value;
+
+try{
+
+const user=await fetch(
+"https://users.roblox.com/v1/usernames/users",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+usernames:[username]
+})
+});
+
+const data=await user.json();
+
+if(!data.data.length){
+alert("User not found");
+return;
+}
+
+const id=data.data[0].id;
+
+const avatar=await fetch(
+`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${id}&size=150x150&format=Png`
+);
+
+const avatarData=
+await avatar.json();
+
+document.getElementById(
+"avatar"
+).src=
+avatarData.data[0].imageUrl;
+
+document.getElementById(
+"displayName"
+).innerText=
+data.data[0].displayName;
+
+document.getElementById(
+"usernameText"
+).innerText=
+"@" + username;
+
+document.getElementById(
+"profile"
+).style.display=
+"block";
+
+}
+catch{
+alert("Error");
+}
+
+}
+
+</script>
+
+</body>
+</html>
